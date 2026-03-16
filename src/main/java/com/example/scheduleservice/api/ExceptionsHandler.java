@@ -1,7 +1,7 @@
 package com.example.scheduleservice.api;
 
-import com.example.scheduleservice.exeptions.NotFoundException;
 import com.example.scheduleservice.exeptions.BadRequestException;
+import com.example.scheduleservice.exeptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

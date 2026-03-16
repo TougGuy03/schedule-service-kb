@@ -1,13 +1,13 @@
 package com.example.scheduleservice.api;
 
-import com.example.scheduleservice.model.api.*;
+import com.example.scheduleservice.model.api.CreatePeriodRequest;
+import com.example.scheduleservice.model.api.PeriodGetById;
+import com.example.scheduleservice.model.api.PeriodResponse;
+import com.example.scheduleservice.model.api.PeriodSearchRequest;
 import com.example.scheduleservice.service.PeriodService;
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/period")

@@ -8,14 +8,12 @@ import com.example.scheduleservice.model.api.ScheduleFull;
 import com.example.scheduleservice.model.api.ScheduleGetById;
 import com.example.scheduleservice.model.domain.Period;
 import com.example.scheduleservice.model.domain.Schedule;
-import com.example.scheduleservice.model.domain.Template;
 import com.example.scheduleservice.repository.PeriodRepository;
 import com.example.scheduleservice.repository.ScheduleRepository;
 import com.example.scheduleservice.service.implemetation.IScheduleService;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;

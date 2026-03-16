@@ -3,7 +3,6 @@ package com.example.scheduleservice.api;
 import com.example.scheduleservice.model.api.CreateScheduleRequest;
 import com.example.scheduleservice.model.api.ScheduleFull;
 import com.example.scheduleservice.model.api.ScheduleGetById;
-import com.example.scheduleservice.model.domain.Schedule;
 import com.example.scheduleservice.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

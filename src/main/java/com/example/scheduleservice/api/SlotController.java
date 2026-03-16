@@ -1,9 +1,7 @@
 package com.example.scheduleservice.api;
 
 import com.example.scheduleservice.model.api.CreateSlotRequest;
-import com.example.scheduleservice.model.api.CreateTemplateRequest;
 import com.example.scheduleservice.model.api.SlotGetById;
-import com.example.scheduleservice.model.api.TemplateGetById;
 import com.example.scheduleservice.service.SlotService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

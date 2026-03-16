@@ -1,11 +1,8 @@
 package com.example.scheduleservice.api;
 
 
-import com.example.scheduleservice.model.api.CreateScheduleRequest;
 import com.example.scheduleservice.model.api.CreateTemplateRequest;
-import com.example.scheduleservice.model.api.ScheduleGetById;
 import com.example.scheduleservice.model.api.TemplateGetById;
-import com.example.scheduleservice.service.ScheduleService;
 import com.example.scheduleservice.service.TemplateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

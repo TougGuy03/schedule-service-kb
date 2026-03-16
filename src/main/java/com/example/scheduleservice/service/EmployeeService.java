@@ -4,12 +4,7 @@ import com.example.scheduleservice.exeptions.NotFoundException;
 import com.example.scheduleservice.model.api.CreateEmployeeRequest;
 import com.example.scheduleservice.model.api.EmployeeGetById;
 import com.example.scheduleservice.model.domain.Employee;
-import com.example.scheduleservice.model.domain.Schedule;
-import com.example.scheduleservice.model.enums.EmployeeStatus;
-import com.example.scheduleservice.model.enums.Position;
-import com.example.scheduleservice.model.enums.SlotType;
 import com.example.scheduleservice.repository.EmployeeRepository;
-import com.example.scheduleservice.repository.ScheduleRepository;
 import com.example.scheduleservice.service.implemetation.IEmployeeService;
 import org.springframework.stereotype.Service;
 

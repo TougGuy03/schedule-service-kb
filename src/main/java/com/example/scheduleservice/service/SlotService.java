@@ -2,7 +2,6 @@ package com.example.scheduleservice.service;
 
 import com.example.scheduleservice.exeptions.NotFoundException;
 import com.example.scheduleservice.model.api.CreateSlotRequest;
-import com.example.scheduleservice.model.api.CreateTemplateRequest;
 import com.example.scheduleservice.model.api.SlotGetById;
 import com.example.scheduleservice.model.domain.Slot;
 import com.example.scheduleservice.model.domain.Template;
@@ -12,7 +11,6 @@ import com.example.scheduleservice.repository.TemplateRepository;
 import com.example.scheduleservice.service.implemetation.ISlotService;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service

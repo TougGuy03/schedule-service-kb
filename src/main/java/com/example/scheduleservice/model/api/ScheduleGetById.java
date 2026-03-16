@@ -1,8 +1,5 @@
 package com.example.scheduleservice.model.api;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 
