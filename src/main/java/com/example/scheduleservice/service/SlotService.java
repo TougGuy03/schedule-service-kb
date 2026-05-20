@@ -8,13 +8,12 @@ import com.example.scheduleservice.model.domain.Template;
 import com.example.scheduleservice.model.enums.Priority;
 import com.example.scheduleservice.repository.SlotRepository;
 import com.example.scheduleservice.repository.TemplateRepository;
-import com.example.scheduleservice.service.implemetation.ISlotService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class SlotService implements ISlotService {
+public class SlotService {
 
     public final SlotRepository slotRepository;
     public final TemplateRepository templateRepository;
@@ -24,7 +23,6 @@ public class SlotService implements ISlotService {
         this.templateRepository = templateRepository;
     }
 
-    @Override
     public void createSlot(CreateSlotRequest slotRequest) {
 
         Template template = templateRepository.findById(slotRequest.templateId())
@@ -44,7 +42,6 @@ public class SlotService implements ISlotService {
         slotRepository.save(entity);
     }
 
-    @Override
     public SlotGetById getById(String id) {
         Slot entity = slotRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Slot not found"));

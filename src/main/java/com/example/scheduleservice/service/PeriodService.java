@@ -11,7 +11,6 @@ import com.example.scheduleservice.repository.EmployeeRepository;
 import com.example.scheduleservice.repository.PeriodRepository;
 import com.example.scheduleservice.repository.ScheduleRepository;
 import com.example.scheduleservice.repository.SlotRepository;
-import com.example.scheduleservice.service.implemetation.IPeriodService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +18,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
-public class PeriodService implements IPeriodService {
+public class PeriodService {
 
     private final PeriodRepository periodRepository;
     private final ScheduleRepository scheduleRepository;
@@ -38,7 +41,6 @@ public class PeriodService implements IPeriodService {
         this.slotRepository = slotRepository;
     }
 
-    @Override
     public void createPeriod(CreatePeriodRequest periodRequest, String administratorId) {
         Slot slot = slotRepository.findById(periodRequest.slotId())
                 .orElseThrow(() -> new NotFoundException("Slot not found"));
@@ -57,8 +59,6 @@ public class PeriodService implements IPeriodService {
                     .orElseThrow(() -> new NotFoundException("Executor not found"));
         }
 
-
-
         boolean hasOverlap = periodRepository.existsOverlappingPeriod(
                 executor == null ? administratorId : executor.getId(),
                 slot.getBeginDate(),
@@ -75,12 +75,12 @@ public class PeriodService implements IPeriodService {
                 schedule,
                 periodRequest.slotType(),
                 administrator,
-                executor
+                executor,
+                periodRequest.workDate() == null ? LocalDate.now(ZoneOffset.UTC) : periodRequest.workDate()
         );
         periodRepository.save(entity);
     }
 
-    @Override
     public PeriodGetById getById(String id) {
         Period entity = periodRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Period not found"));
@@ -96,7 +96,6 @@ public class PeriodService implements IPeriodService {
         return periodResponse;
     }
 
-    @Override
     public Page<PeriodResponse> searchPeriods(PeriodSearchRequest periodSearchRequest) {
         Specification<Period> specification =
                 buildSpecification(periodSearchRequest.filter());
@@ -111,8 +110,19 @@ public class PeriodService implements IPeriodService {
                 period.getSchedule().getId(),
                 period.getSlotType(),
                 period.getAdministrator().getId(),
-                period.getExecutor() != null ? period.getExecutor().getId() : null
+                period.getExecutor() != null ? period.getExecutor().getId() : null,
+                period.getWorkDate()
         ));
+    }
+
+    public List<String> getSlots(String executorId, Instant from, Instant to) {
+        LocalDate fromDate = from.atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate toDate = to.atZone(ZoneOffset.UTC).toLocalDate();
+
+        List<Period> periods = periodRepository.findExecutorPeriodsInRange(executorId, fromDate, toDate);
+        return periods.stream()
+                .map(period -> period.getWorkDate().toString())
+                .toList();
     }
 
     private Specification<Period> buildSpecification(PeriodFilter filter) {
@@ -137,6 +147,12 @@ public class PeriodService implements IPeriodService {
             }
             if(filter.executorId() != null){
                 specificationPredicates.add(((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("executor").get("id"), filter.executorId())));
+            }
+            if(filter.from() != null){
+                specificationPredicates.add(((root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("workDate"), filter.from())));
+            }
+            if(filter.to() != null){
+                specificationPredicates.add(((root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("workDate"), filter.to())));
             }
             return Specification.allOf(specificationPredicates);
     }

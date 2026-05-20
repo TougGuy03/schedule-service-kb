@@ -10,7 +10,6 @@ import com.example.scheduleservice.model.domain.Period;
 import com.example.scheduleservice.model.domain.Schedule;
 import com.example.scheduleservice.repository.PeriodRepository;
 import com.example.scheduleservice.repository.ScheduleRepository;
-import com.example.scheduleservice.service.implemetation.IScheduleService;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ScheduleService implements IScheduleService {
+public class ScheduleService {
 
     private final PeriodRepository periodRepository;
     private ScheduleRepository scheduleRepository;
@@ -29,7 +28,6 @@ public class ScheduleService implements IScheduleService {
         this.periodRepository = periodRepository;
     }
 
-    @Override
     public void createSchedule(CreateScheduleRequest schedule) {
         String tags = schedule.scheduleTags() == null
                 ? null
@@ -44,7 +42,6 @@ public class ScheduleService implements IScheduleService {
         scheduleRepository.save(entity);
     }
 
-    @Override
     public ScheduleGetById getById(String id) {
         Schedule entity = scheduleRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Schedule not found"));
@@ -58,7 +55,6 @@ public class ScheduleService implements IScheduleService {
         return scheduleResponse;
     }
 
-    @Override
     public ScheduleFull getFull(String id, String scheduleName) {
         if(id == null && scheduleName == null) {
             throw new BadRequestException("Schedule not found");

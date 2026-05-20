@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "period")
 @Getter
@@ -38,4 +40,7 @@ public class Period {
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "executor_id")
         private Employee executor;
+
+        @Column(name = "work_date", nullable = false)
+        private LocalDate workDate;
 }

@@ -1,0 +1,30 @@
+rules:
+  - id: hardcoded-spring-datasource-password
+    message: Hardcoded Spring datasource password. Use an environment variable instead.
+    severity: ERROR
+    languages:
+      - generic
+    paths:
+      include:
+        - src/main/resources/application.properties
+    pattern-regex: 'spring\.datasource\.password\s*=\s*[^$\s].+'
+
+  - id: spring-jpa-show-sql-enabled
+    message: spring.jpa.show-sql should not be enabled in production because SQL logs can leak sensitive data.
+    severity: WARNING
+    languages:
+      - generic
+    paths:
+      include:
+        - src/main/resources/application.properties
+    pattern: spring.jpa.show-sql=true
+
+  - id: spring-hibernate-create-drop-enabled
+    message: spring.jpa.hibernate.ddl-auto=create-drop is unsafe outside local development because it can destroy data.
+    severity: WARNING
+    languages:
+      - generic
+    paths:
+      include:
+        - src/main/resources/application.properties
+    pattern: spring.jpa.hibernate.ddl-auto=create-drop

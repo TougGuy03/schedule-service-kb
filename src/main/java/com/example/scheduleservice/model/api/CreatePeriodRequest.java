@@ -3,6 +3,8 @@ package com.example.scheduleservice.model.api;
 import com.example.scheduleservice.model.enums.SlotType;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
 public record CreatePeriodRequest(
         @NotNull
         String slotId,
@@ -13,6 +15,8 @@ public record CreatePeriodRequest(
         @NotNull
         SlotType slotType,
 
-        String executorId
+        String executorId,
+
+        LocalDate workDate
 ) {
 }

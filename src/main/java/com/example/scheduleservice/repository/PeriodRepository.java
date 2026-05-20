@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.OffsetTime;
 import java.util.List;
 
@@ -24,4 +25,18 @@ public interface PeriodRepository extends JpaRepository<Period, String>, JpaSpec
     );
 
     List<Period> findByScheduleIdOrderBySlotBeginDate(String scheduleId);
+
+    @Query("""
+        select p
+        from Period p
+        left join p.executor e
+        where (e.id = :executorId or (e is null and p.administrator.id = :executorId))
+          and p.workDate between :fromDate and :toDate
+        order by p.workDate asc
+    """)
+    List<Period> findExecutorPeriodsInRange(
+            @Param("executorId") String executorId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate
+    );
 }
