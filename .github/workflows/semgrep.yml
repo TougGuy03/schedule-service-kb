@@ -34,9 +34,55 @@ jobs:
           --json
           --output semgrep-report.json
 
+      - name: Create readable Semgrep report
+        if: always()
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          report_path = Path("semgrep-report.json")
+          output_path = Path("semgrep-report.md")
+
+          if not report_path.exists():
+              output_path.write_text("# Semgrep SAST Report\n\nSemgrep report was not generated.\n", encoding="utf-8")
+              raise SystemExit(0)
+
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          results = report.get("results", [])
+          scanned = report.get("paths", {}).get("scanned", [])
+
+          lines = [
+              "# Semgrep SAST Report",
+              "",
+              f"- Semgrep version: `{report.get('version', 'unknown')}`",
+              f"- Scanned files: `{len(scanned)}`",
+              f"- Findings: `{len(results)}`",
+              "",
+          ]
+
+          if results:
+              lines.extend([
+                  "| Severity | Rule | File | Line | Message |",
+                  "| --- | --- | --- | --- | --- |",
+              ])
+              for finding in results:
+                  severity = finding.get("extra", {}).get("severity", "UNKNOWN")
+                  rule = finding.get("check_id", "")
+                  path = finding.get("path", "")
+                  line = finding.get("start", {}).get("line", "")
+                  message = finding.get("extra", {}).get("message", "").replace("|", "\\|")
+                  lines.append(f"| {severity} | `{rule}` | `{path}` | {line} | {message} |")
+          else:
+              lines.append("No findings found.")
+
+          output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
       - name: Upload Semgrep report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: semgrep-report
-          path: semgrep-report.json
+          path: |
+            semgrep-report.json
+            semgrep-report.md
