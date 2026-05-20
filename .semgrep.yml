@@ -28,3 +28,17 @@ rules:
       include:
         - src/main/resources/application.properties
     pattern: spring.jpa.hibernate.ddl-auto=create-drop
+
+  - id: java-runtime-exec
+    message: Runtime.exec can lead to command injection when command text includes user-controlled data.
+    severity: ERROR
+    languages:
+      - java
+    pattern: Runtime.getRuntime().exec(...)
+
+  - id: java-weak-md5-hash
+    message: MD5 is cryptographically weak. Use SHA-256 or a password hashing function depending on the use case.
+    severity: WARNING
+    languages:
+      - java
+    pattern: MessageDigest.getInstance("MD5")
