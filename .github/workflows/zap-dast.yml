@@ -65,21 +65,28 @@ jobs:
           exit 1
 
       - name: Run OWASP ZAP baseline scan
-        continue-on-error: true
         run: |
-          docker run --rm --network host \
-            -v "${{ github.workspace }}:/zap/wrk/:rw" \
+          set -o pipefail
+
+          mkdir -p zap-output
+          chmod 777 zap-output
+
+          docker run --rm --network host --user root \
+            -v "${{ github.workspace }}:/zap/wrk:rw" \
             -w /zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t http://localhost:8080 \
             -c zap-rules.tsv \
-            -r /zap/wrk/zap-report.html \
-            -w /zap/wrk/zap-report.md \
-            -J /zap/wrk/zap-report.json \
-            -I
+            -r zap-output/zap-report.html \
+            -w zap-output/zap-report.md \
+            -J zap-output/zap-report.json \
+            -I 2>&1 | tee zap-output/zap-console.log
 
-          ls -la zap-report.* || true
+          ls -la zap-output
+          test -s zap-output/zap-report.html
+          test -s zap-output/zap-report.md
+          test -s zap-output/zap-report.json
 
       - name: Upload ZAP reports
         if: always()
@@ -87,7 +94,5 @@ jobs:
         with:
           name: zap-dast-report
           path: |
-            zap-report.html
-            zap-report.md
-            zap-report.json
+            zap-output/
             app.log
