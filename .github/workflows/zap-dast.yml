@@ -1,0 +1,90 @@
+name: OWASP ZAP DAST
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zap:
+    name: Run OWASP ZAP Baseline Scan
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: schedule_service
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d schedule_service"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Start Spring Boot application
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/schedule_service
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
+        run: |
+          chmod +x mvnw
+          ./mvnw spring-boot:run > app.log 2>&1 &
+
+      - name: Wait for application
+        run: |
+          for i in {1..60}; do
+            if curl -fsS http://localhost:8080/v3/api-docs > /dev/null; then
+              echo "Application is ready"
+              exit 0
+            fi
+            sleep 5
+          done
+
+          echo "Application did not start"
+          cat app.log
+          exit 1
+
+      - name: Run OWASP ZAP baseline scan
+        continue-on-error: true
+        run: |
+          docker run --rm --network host \
+            -v "${{ github.workspace }}:/zap/wrk/:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+            -t http://localhost:8080 \
+            -c zap-rules.tsv \
+            -r zap-report.html \
+            -w zap-report.md \
+            -J zap-report.json \
+            -I
+
+      - name: Upload ZAP reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-dast-report
+          path: |
+            zap-report.html
+            zap-report.md
+            zap-report.json
+            app.log

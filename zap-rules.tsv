@@ -1,0 +1,6 @@
+10020	FAIL	(X-Frame-Options Header Not Set)
+10021	FAIL	(X-Content-Type-Options Header Missing)
+10015	WARN	(Incomplete or No Cache-control and Pragma HTTP Header Set)
+10019	WARN	(Content-Type Header Missing)
+10023	WARN	(Information Disclosure - Debug Error Messages)
+40014	WARN	(Absence of Anti-CSRF Tokens)
