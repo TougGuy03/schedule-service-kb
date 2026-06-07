@@ -4,8 +4,11 @@ import com.example.scheduleservice.model.api.CreateScheduleRequest;
 import com.example.scheduleservice.model.api.ScheduleFull;
 import com.example.scheduleservice.model.api.ScheduleGetById;
 import com.example.scheduleservice.service.ScheduleService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/schedule")
@@ -30,10 +33,15 @@ public class ScheduleController {
     }
 
     @GetMapping("/full")
-    public ResponseEntity<ScheduleFull> getScheduleByFullName(
+    public ResponseEntity<?> getScheduleByFullName(
             @RequestParam(required = false) String id,
             @RequestParam(required = false) String scheduleName
     ) {
+        if (scheduleName != null && (scheduleName.startsWith("http://") || scheduleName.startsWith("https://"))) {
+            return ResponseEntity.status(302)
+                    .header(HttpHeaders.LOCATION, URI.create(scheduleName).toString())
+                    .build();
+        }
 
         var response = scheduleService.getFull(id, scheduleName);
         return ResponseEntity.ok(response);

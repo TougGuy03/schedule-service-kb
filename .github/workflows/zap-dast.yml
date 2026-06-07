@@ -2,9 +2,7 @@ name: OWASP ZAP DAST
 
 on:
   push:
-    branches:
-      - master
-      - main
+    branches: [master, main]
   pull_request:
   workflow_dispatch:
 
@@ -52,24 +50,11 @@ jobs:
 
       - name: Wait for application
         run: |
-          for i in {1..60}; do
-            if curl -fsS http://localhost:8080/v3/api-docs > /dev/null; then
-              echo "Application is ready"
-              exit 0
-            fi
-            sleep 5
-          done
-
-          echo "Application did not start"
-          cat app.log
-          exit 1
+          timeout 300 bash -c 'until curl -fsS http://localhost:8080/v3/api-docs > /dev/null; do sleep 5; done' || (cat app.log && exit 1)
 
       - name: Run OWASP ZAP API scan
         run: |
-          set -o pipefail
-
           mkdir -p zap-output
-          chmod 777 zap-output
 
           docker run --rm --network host --user root \
             -v "${{ github.workspace }}:/zap/wrk:rw" \
@@ -82,12 +67,7 @@ jobs:
             -r zap-output/zap-report.html \
             -w zap-output/zap-report.md \
             -J zap-output/zap-report.json \
-            -I 2>&1 | tee zap-output/zap-console.log
-
-          ls -la zap-output
-          test -s zap-output/zap-report.html
-          test -s zap-output/zap-report.md
-          test -s zap-output/zap-report.json
+            -I
 
       - name: Upload ZAP reports
         if: always()
