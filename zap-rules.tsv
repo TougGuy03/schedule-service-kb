@@ -1,6 +1,4 @@
-10021	WARN	(X-Content-Type-Options Header Missing)
 10023	FAIL	(Information Disclosure - Debug Error Messages)
-10049	WARN	(Storable and Cacheable Content)
 10098	FAIL	(Cross-Domain Misconfiguration)
 10099	FAIL	(Source Code Disclosure)
 20019	FAIL	(External Redirect)
